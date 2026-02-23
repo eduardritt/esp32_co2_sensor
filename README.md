@@ -1,7 +1,7 @@
 # 🌬️ ESP32 CO₂-Ampel mit SCD41 & 8-stelligem MAX7219 Display
 
 [![Arduino](https://img.shields.io/badge/Platform-Arduino-blue.svg)](https://www.arduino.cc/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-GPL-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)]()
 
 Ein intelligentes CO₂-Ampelsystem auf Basis eines **ESP32** und des **Sensirion SCD41 Sensors**.  
@@ -138,4 +138,4 @@ Installation über den Arduino Library Manager.
 
 ## 📄 Lizenz
 
-MIT License – siehe [LICENSE](LICENSE) Datei
+GPL 3.0 License – siehe [LICENSE](LICENSE) Datei
