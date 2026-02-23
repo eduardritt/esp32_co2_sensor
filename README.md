@@ -110,7 +110,7 @@ Installation über den Arduino Library Manager.
 
 ## 🖼️ Verdrahtungsdiagramm / Screenshot
 
-![Verdrahtung / Screenshot](./docs/wiring_diagram.png)
+![Verdrahtung / Screenshot](./docs/co2_sensor_kicad.png)
 
 
 ---
