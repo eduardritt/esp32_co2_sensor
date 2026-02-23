@@ -6,6 +6,19 @@
 
 Ein intelligentes CO₂-Ampelsystem auf Basis eines **ESP32** und des **Sensirion SCD41 Sensors**.  
 Die aktuelle CO₂-Konzentration wird auf einem **8-stelligen MAX7219 7-Segment-Display** angezeigt und zusätzlich über eine LED-Ampel visualisiert.
+---
+
+## Messwerte
+
+Europäische Norm EN 13779 bewertet die Konzentration von CO2 in Innenräumen in vier Qualitätsstufen. 
+Als hygienisch inakzeptabel gilt die Raumluftqualität ab 2.000 ppm.
+
+| CO2 Gehalt im ppm    |  	CO2 in %	     |   Qualitätsstufe
+|----------------------|-----------------|----------------------------|
+|   Unter 800	        |   < 0,08 %	     | Hohe Raumluftqualität      |
+|   800 - 1.000	     |   0,08 - 0,1 %  | Mittlere Raumluftqualität  |
+|   1.000 - 1.400      |   0,1 - 0,14 %  | Mäßige Raumluftqualität    |
+|   Über 1.400         |   >0,14 %	     | Niedrige Raumluftqualität  | 
 
 ---
 
