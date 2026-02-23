@@ -19,26 +19,28 @@
 
 #include <Wire.h>
 #include <SensirionI2cScd4x.h>
+#include "MAX7SegmentDisplay.h"
 
+// ----------- MAX7219 Pins -----------
+#define DIN 23
+#define CS 5
+#define CLK 18
+
+MAX7SegmentDisplay display(DIN, CS, CLK);
+
+// ----------- Sensor -----------
 SensirionI2cScd4x scd4x;
 
+// ----------- LEDs -----------
 #define LED_GREEN 27
 #define LED_YELLOW 26
 #define LED_RED 25
 
-bool sensorOK = true;
+bool redBlinkState = false;
+unsigned long lastBlinkTime = 0;
+unsigned long lastMeasurement = 0;
 
-void blinkError() {
-  digitalWrite(LED_GREEN, HIGH);
-  digitalWrite(LED_YELLOW, HIGH);
-  digitalWrite(LED_RED, HIGH);
-  delay(300);
-
-  digitalWrite(LED_GREEN, LOW);
-  digitalWrite(LED_YELLOW, LOW);
-  digitalWrite(LED_RED, LOW);
-  delay(300);
-}
+uint16_t currentCO2 = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -48,61 +50,81 @@ void setup() {
   pinMode(LED_YELLOW, OUTPUT);
   pinMode(LED_RED, OUTPUT);
 
-  scd4x.begin(Wire, 0x62);
+  // Display
+  display.setBright(10);
+  display.setDigitLimit(8);
+  display.clear();
 
+  // Sensor starten
+  scd4x.begin(Wire, 0x62);
   scd4x.stopPeriodicMeasurement();
   delay(500);
-
-  if (scd4x.startPeriodicMeasurement() != 0) {
-    sensorOK = false;
-  }
+  scd4x.startPeriodicMeasurement();
 }
 
 void loop() {
 
-  if (!sensorOK) {
-    blinkError();
-    return;
+  unsigned long now = millis();
+
+  // ----------- CO2 Messung alle 5 Sekunden -----------
+  if (now - lastMeasurement >= 5000) {
+    lastMeasurement = now;
+
+    uint16_t co2;
+    float temperature;
+    float humidity;
+
+    uint16_t error = scd4x.readMeasurement(co2, temperature, humidity);
+
+    if (!error && co2 > 400) {
+      currentCO2 = co2;
+      Serial.print("CO2: ");
+      Serial.println(currentCO2);
+
+      displayCO2(currentCO2);
+    } else {
+      Serial.println("Sensorfehler!");
+      display.clear();
+      blinkAllLEDs();
+      return;
+    }
   }
 
-  uint16_t co2;
-  float temperature;
-  float humidity;
+  // ----------- LED Steuerung -----------
+  digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_YELLOW, LOW);
 
-  delay(5000);
-
-  uint16_t error = scd4x.readMeasurement(co2, temperature, humidity);
-
-  if (error) {
-    Serial.println("Sensorfehler!");
-    sensorOK = false;
-    return;
+  if (currentCO2 < 800) {
+    digitalWrite(LED_GREEN, HIGH);
+    digitalWrite(LED_RED, LOW);
   }
+  else if (currentCO2 < 1400) {
+    digitalWrite(LED_YELLOW, HIGH);
+    digitalWrite(LED_RED, LOW);
+  }
+  else {
+    // Rot blinkt alle 300ms
+    if (now - lastBlinkTime >= 300) {
+      lastBlinkTime = now;
+      redBlinkState = !redBlinkState;
+      digitalWrite(LED_RED, redBlinkState);
+    }
+  }
+}
 
-  Serial.print("CO2: ");
-  Serial.println(co2);
+// ----------- CO2 Anzeige -----------
+void displayCO2(uint16_t value) {
+  display.clear();
+  display.printDigit(value);  // linksbündig
+}
 
-  Serial.print("Temp: ");
-  Serial.println(temperature);
-
-  Serial.print("Feuchtigkeit: ");
-  Serial.println(humidity);
-
+// ----------- Fehlerblinken -----------
+void blinkAllLEDs() {
+  digitalWrite(LED_GREEN, HIGH);
+  digitalWrite(LED_YELLOW, HIGH);
+  digitalWrite(LED_RED, HIGH);
+  delay(200);
   digitalWrite(LED_GREEN, LOW);
   digitalWrite(LED_YELLOW, LOW);
   digitalWrite(LED_RED, LOW);
-
-  if (co2 < 800) {
-    digitalWrite(LED_GREEN, HIGH);
-  }
-  else if (co2 < 1400) {
-    digitalWrite(LED_YELLOW, HIGH);
-  }
-  else {
-    // Rot blinkt
-    digitalWrite(LED_RED, HIGH);
-    delay(300);
-    digitalWrite(LED_RED, LOW);
-    delay(300);
-  }
 }
