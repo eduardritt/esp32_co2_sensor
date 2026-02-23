@@ -53,13 +53,12 @@ Keine blockierenden `delay()`-Aufrufe im Hauptprogramm
 
 | Display Pin | ESP32 Pin |
 |-------------|------------|
-| VCC | 5V ⚠️ |
+| VCC | 3.3V |
 | GND | GND |
 | DIN | GPIO23 |
 | CLK | GPIO18 |
 | CS  | GPIO5 |
 
-> ⚠️ Wichtig: Das MAX7219-Modul muss mit **5V betrieben** werden. 3.3V reicht meist nicht aus.
 
 ---
 
@@ -103,7 +102,7 @@ Installation über den Arduino Library Manager.
 3. Der Wert wird:
    - auf dem **7-Segment-Display** angezeigt
    - zur **Ampelsteuerung** verwendet  
-4. Bei Werten ≥1000 ppm blinkt die **rote LED** als Lüftungswarnung
+4. Bei Werten ≥1400 ppm blinkt die **rote LED** als Lüftungswarnung
 
 
 ---
